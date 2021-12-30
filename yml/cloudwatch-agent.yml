@@ -1,0 +1,62 @@
+---
+- name: cloudwatch-agent
+  hosts: localhost,_final_web,_final_WAS
+  gather_facts: no
+
+  tasks:
+    - name: check agent
+      stat:
+        path: /opt/aws/amazon-cloudwatch-agent
+      register: agent
+
+    # - name: check install
+    #   meta: end_play
+    #   when: agent.stat.exists == true
+      
+    - name: download agent
+      shell: |
+        cd ~
+        wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+      when: agent.stat.exists == false
+
+    - name: install agent
+      shell: rpm -U ~/amazon-cloudwatch-agent.rpm
+      when: agent.stat.exists == false
+      
+    - name: check collectd
+      stat:
+        path: /usr/share/collectd
+      register: collectd
+
+    - name: create collectd
+      file:
+        path: /usr/share/collectd
+        recurse: yes
+        state: directory
+      when: collectd.stat.exists == false
+
+    - name: check typesdb
+      stat:
+        path: /usr/share/collectd/types.db
+      register: typesdb
+
+    - name: create types.db
+      file:
+        path: /usr/share/collectd/types.db
+        state: touch
+      when: typesdb.stat.exists == false
+    
+    - name: check agent
+      stat:
+        path: /opt/aws/amazon-cloudwatch-agent
+      register: agent
+    
+    - name: copy config json
+      copy:
+        src: ./cloudwatch-agent.json
+        dest: /opt/aws/amazon-cloudwatch-agent/bin/config.json
+      when: agent.stat.exists == true
+
+    - name: check install
+      shell: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json -s
+      when: agent.stat.exists == true

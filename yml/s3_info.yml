@@ -1,0 +1,30 @@
+---
+- name : Test
+  hosts: localhost
+  gather_facts: no
+  connection: local
+
+  tasks:
+    - name: Get all s3
+      community.aws.aws_s3_bucket_info :
+        region: ap-northeast-2
+        bucket_facts:
+          bucket_tagging: yes
+      register: info
+
+    # - name: print
+    #   debug:
+    #     msg: "{{ item.bucket_tagging }}, {{ item.name }}"
+    #   when: item.bucket_tagging.Test is defined
+    #   with_items: "{{ info.buckets }}"
+
+    - name: set var
+      set_fact: 
+        bucket_origin: "{{item}}"
+        # bucket_origin: "{{ item.name }}"
+      with_items: "{{ info.buckets }}"
+      when: item.bucket_tagging.Role is defined and item.bucket_tagging.Role == 'final_origin'
+    
+    - name: print
+      debug:
+        msg: "{{ bucket_origin }}"

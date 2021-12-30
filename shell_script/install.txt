@@ -1,0 +1,85 @@
+#/root
+yum install gcc openssl-devel bzip2-devel libffi-devel -y
+wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
+tar xzf Python-3.8.1.tgz
+cd Python-3.8.1
+#/root/Python3.8.1
+sudo ./configure --enable-optimizations
+make altinstall
+which python3.8
+#/usr/bin/which: no python3.8 in (/sbin:/bin:/usr/sbin:/usr/bin)(오류)
+#환경변수를 통하여 경로 지정
+#/root
+vi .bashrc (PATH=$PATH:/usr/local/bin)
+pip3.8 install ansible
+ansible --version
+pip3.8 install boto3
+#.root/.ssh
+#/.ssh id_rsa 키생성
+chmod 600 id_rsa
+#/opt
+cd /opt/ansible/inventory #파일생성
+(mkdir ansible, mkdir ansible/inventory)
+aws configure
+
+#/opt/ansible/inventory
+vi aws_ec2.yml
+===================================
+---
+plugin: aws_ec2
+regions:
+  - ap-northeast-2
+keyed_groups:
+  - key: tags.role
+filters:
+  instance-state-name: running
+#  tag:role: web
+compose:
+  ansible_host: private_ip_address
+===================================
+vi ping.yml
+================================
+---
+- name: test ping
+  hosts: _was,_web
+  gather_facts: false
+
+  tasks:
+    - name: ping-test
+      ping:
+=============================
+vi ansible.cfg
+=================================
+[defaults]
+host_key_checking = False
+inventory = aws_ec2.yml
+interpreter_python = auto_silent
+private_key_file = /home/ec2-user/.ssh/id_rsa
+remote_user=ec2-user
+
+[privilege_escalation]
+become = true
+become_method = sudo
+become_user = root
+become_ask_pass = false
+===============================
+vi ls.yml
+---
+- hosts: _web:_was
+  become: true
+  tasks:
+    - name: yum
+      shell: "ls -al /root"
+      register: result
+
+    - name: print
+      debug:
+        msg: "{{ result }}"
+================================
+#/opt/ansible/inventory
+ansible-inventory -i aws_ec2.yml --graph
+ansible all -m ping
+ansible-playbook ls.yml
+
+#web은 tags role web추가
+#was는 tags role was추가

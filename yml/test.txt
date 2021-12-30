@@ -1,0 +1,28 @@
+ec2-3-35-173-161.ap-northeast-2.compute.amazonaws.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.7"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+ec2-52-78-157-198.ap-northeast-2.compute.amazonaws.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.7"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+ec2-13-124-14-173.ap-northeast-2.compute.amazonaws.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.7"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+ec2-3-35-238-10.ap-northeast-2.compute.amazonaws.com | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/local/bin/python3.8"
+    },
+    "changed": false,
+    "ping": "pong"
+}

@@ -1,0 +1,18 @@
+---
+- name : Test
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Get all RDS instances
+      community.aws.rds_instance_info:
+        region: ap-northeast-2
+      register: info
+
+    - name: set fact
+      set_fact:
+        val: { 'host': '{{item.endpoint.address}}', 'port': '{{item.endpoint.port}}', 'username': '{{item.master_username}}', 'default_db': '{{item.db_name | default("test")}}' }
+      with_items: "{{info.instances}}"
+      when: item.tags.Role is defined and item.tags.Role == 'final_db'
+
+    - debug:
+        msg: "{{ val }}"

@@ -1,0 +1,219 @@
+<html>
+
+<body>
+	<h1 id='title'></h1>
+	<div id='area' style="width: 100%; height: 100%;"></div>
+</body>
+<script src='./jquery-3.3.1.slim.min.js'></script>
+<script>
+	(function () {
+		const images = [
+			{ path: './images/4.png', name: '4' },
+			{ path: './images/23.png', name: '23' },
+			{
+				path: './images/KakaoTalk_20211213_170326531.png',
+				name: 'KakaoTalk_20211213_170326531'
+			},
+			{ path: './images/27.png', name: '27' },
+			{ path: './images/30.png', name: '30' },
+			{
+				path: './images/KakaoTalk_20211210_160301230.jpg',
+				name: 'KakaoTalk_20211210_160301230'
+			},
+			{
+				path: './images/KakaoTalk_20211202_153504078.jpg',
+				name: 'KakaoTalk_20211202_153504078'
+			},
+			{ path: './images/50.png', name: '50' },
+			{ path: './images/15.png', name: '15' },
+			{
+				path: './images/KakaoTalk_20211126_151407852.jpg',
+				name: 'KakaoTalk_20211126_151407852'
+			},
+			{
+				path: './images/KakaoTalk_20211213_150455545.jpg',
+				name: 'KakaoTalk_20211213_150455545'
+			},
+			{ path: './images/33.png', name: '33' },
+			{
+				path: './images/KakaoTalk_20211216_223517944_04.jpg',
+				name: 'KakaoTalk_20211216_223517944_04'
+			},
+			{ path: './images/7.png', name: '7' },
+			{
+				path: './images/KakaoTalk_20211203_000012547.jpg',
+				name: 'KakaoTalk_20211203_000012547'
+			},
+			{
+				path: './images/KakaoTalk_20211218_085935901.jpg',
+				name: 'KakaoTalk_20211218_085935901'
+			},
+			{
+				path: './images/KakaoTalk_20211218_155135911.png',
+				name: 'KakaoTalk_20211218_155135911'
+			},
+			{
+				path: './images/KakaoTalk_20211213_100036399.jpg',
+				name: 'KakaoTalk_20211213_100036399'
+			},
+			{
+				path: './images/KakaoTalk_20211207_233827179_03.jpg',
+				name: 'KakaoTalk_20211207_233827179_03'
+			},
+			{ path: './images/26.png', name: '26' },
+			{ path: './images/12.png', name: '12' },
+			{ path: './images/9.png', name: '9' },
+			{ path: './images/19.png', name: '19' },
+			{ path: './images/1.png', name: '1' },
+			{ path: './images/35.png', name: '35' },
+			{
+				path: './images/KakaoTalk_20211216_223517944_03.jpg',
+				name: 'KakaoTalk_20211216_223517944_03'
+			},
+			{ path: './images/21.png', name: '21' },
+			{ path: './images/11.png', name: '11' },
+			{ path: './images/10.png', name: '10' },
+			{ path: './images/16.png', name: '16' },
+			{ path: './images/60.png', name: '60' },
+			{
+				path: './images/KakaoTalk_20211215_124525846.jpg',
+				name: 'KakaoTalk_20211215_124525846'
+			},
+			{ path: './images/56.png', name: '56' },
+			{
+				path: './images/KakaoTalk_20211207_233827179_08.jpg',
+				name: 'KakaoTalk_20211207_233827179_08'
+			},
+			{
+				path: './images/KakaoTalk_20211216_223517944_06.jpg',
+				name: 'KakaoTalk_20211216_223517944_06'
+			},
+			{ path: './images/57.png', name: '57' },
+			{ path: './images/37.png', name: '37' },
+			{ path: './images/43.png', name: '43' },
+			{
+				path: './images/KakaoTalk_20211218_090307008.png',
+				name: 'KakaoTalk_20211218_090307008'
+			},
+			{ path: './images/38.png', name: '38' },
+			{ path: './images/13.png', name: '13' },
+			{ path: './images/48.png', name: '48' },
+			{ path: './images/22.png', name: '22' },
+			{
+				path: './images/KakaoTalk_20211207_233827179_05.jpg',
+				name: 'KakaoTalk_20211207_233827179_05'
+			},
+			{ path: './images/40.png', name: '40' },
+			{ path: './images/46.png', name: '46' },
+			{
+				path: './images/KakaoTalk_20211207_233827179_04.jpg',
+				name: 'KakaoTalk_20211207_233827179_04'
+			},
+			{ path: './images/8.png', name: '8' },
+			{
+				path: './images/KakaoTalk_20211216_223517944.jpg',
+				name: 'KakaoTalk_20211216_223517944'
+			},
+			{ path: './images/18.png', name: '18' },
+			{ path: './images/61.png', name: '61' },
+			{
+				path: './images/KakaoTalk_20211214_090819559.jpg',
+				name: 'KakaoTalk_20211214_090819559'
+			},
+			{ path: './images/3.png', name: '3' },
+			{
+				path: './images/KakaoTalk_20211206_152040958.png',
+				name: 'KakaoTalk_20211206_152040958'
+			},
+			{
+				path: './images/KakaoTalk_20211208_095016405_01.jpg',
+				name: 'KakaoTalk_20211208_095016405_01'
+			},
+			{
+				path: './images/KakaoTalk_20211202_121404150.jpg',
+				name: 'KakaoTalk_20211202_121404150'
+			},
+			{ path: './images/2.png', name: '2' },
+			{
+				path: './images/KakaoTalk_20211216_162819832_01.jpg',
+				name: 'KakaoTalk_20211216_162819832_01'
+			},
+			{
+				path: './images/KakaoTalk_20211216_223517944_05.jpg',
+				name: 'KakaoTalk_20211216_223517944_05'
+			},
+			{
+				path: './images/KakaoTalk_20211207_233827179_06.jpg',
+				name: 'KakaoTalk_20211207_233827179_06'
+			},
+			{
+				path: './images/KakaoTalk_20211207_010437997.jpg',
+				name: 'KakaoTalk_20211207_010437997'
+			},
+			{
+				path: './images/KakaoTalk_20211214_001352054.jpg',
+				name: 'KakaoTalk_20211214_001352054'
+			},
+			{ path: './images/54.png', name: '54' },
+			{
+				path: './images/KakaoTalk_20211129_101332580.jpg',
+				name: 'KakaoTalk_20211129_101332580'
+			}
+		];
+
+		let currentRound = 64;
+
+		const showRound = () => {
+			$('#title').text(currentRound);
+		}
+
+		const showImages = (idx1, idx2) => {
+			$('#area').empty();
+			const img1 = document.createElement('img');
+			const img2 = document.createElement('img');
+
+			img1.src = images[idx1].path;
+			img2.src = images[idx2].path;
+
+			img1.onclick = function () {
+				nextTurn(idx2);
+			}
+			img2.onclick = function () {
+				nextTurn(idx1);
+			}
+			$('#area').append(img1).append(img2);
+		}
+
+		const nextTurn = (idx) => {
+			if (currentRound === 1) {
+				alert(JSON.stringify(images));
+				return;
+			}
+			images.splice(idx, 1);
+			if (currentRound / 2 === images.length) {
+				currentRound /= 2;
+				if (currentRound === 1) {
+					alert(JSON.stringify(images));
+					return;
+				}
+				initWindows();
+				alert(currentRound + '강 ㄱㄱ');
+				return;
+			}
+			if (idx % 2 === 1) {
+				showImages(idx - 3, idx - 2);
+			} else {
+				showImages(idx - 2, idx - 1);
+			}
+		}
+
+		const initWindows = _ => {
+			images.sort(_ => Math.random() - 0.5);
+			showImages(currentRound - 1, currentRound - 2);
+			showRound();
+		}
+		initWindows();
+	})();
+</script>
+
+</html>

@@ -1,0 +1,60 @@
+---
+- name: mount s3
+  hosts: _final_web, _final_WAS
+  gather_facts: no
+  ignore_errors: yes
+
+  tasks:
+    - name: check mount
+      stat:
+        path: "/mnt/s3-mount"
+      register: state
+
+    - name: install package
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+      - "automake"
+      - "fuse"
+      - "fuse-devel"
+      - "gcc-c++"
+      - "git"
+      - "libcurl-devel"
+      - "libxml2-devel"
+      - "make"
+      - "openssl-devel"
+      when: state.stat.exists == false
+
+    - name: check s3fs
+      stat:
+        path: "/usr/local/bin/s3fs"
+      register: s3fs
+
+    - name: install s3fs
+      shell: |
+        git clone https://github.com/s3fs-fuse/s3fs-fuse.git ~/s3fs-fuse
+        cd ~/s3fs-fuse
+        ./autogen.sh
+        ./configure
+        make
+        make install
+      when: s3fs.stat.exists == false
+    
+    # - name: check PATH env
+    #   shell: echo $PATH
+    #   register: echo
+    # - debug:
+    #     msg: "{{ echo }}"
+
+    # - name: set PATH env
+    #   shell: |
+    #     echo -e '\nPATH=$PATH:/usr/local/bin' >> ~/.bashrc
+    #     source ~/.bashrc
+    #   when: "'/usr/local/bin' not in echo.stdout"
+
+    - name: mount
+      shell: |
+        mkdir /mnt/s3-mount
+        /usr/local/bin/s3fs 'test-web-mount123' /mnt/s3-mount -o iam_role=auto -o allow_other -o umask=000
+      when: state.stat.exists == false

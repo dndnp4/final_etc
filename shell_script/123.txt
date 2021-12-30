@@ -1,0 +1,13 @@
+#/bin/bash
+sudo su
+cd
+yum install gcc openssl-devel bzip2-devel libffi-devel -y
+wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
+tar xzf Python-3.8.1.tgz
+cd Python-3.8.1
+./configure --enable-optimizations
+make altinstall
+which python3.8
+echo .bashrc << PATH=$PATH:/usr/local/bin
+pip3.8 install ansible
+pip3.8 install boto3

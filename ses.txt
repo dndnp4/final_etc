@@ -1,0 +1,72 @@
+ses에서 이메일 등록
+email address / domains / configuration sets
+
+sending statics에서 sandbox에서 벗어 날 수 없음-> 개인 메일에만 이동가능하게 함
+sender/recipient 둘 다 인증받은 개인 메일 사용
+
+-----------------------------------------------------------
+amazon-ses-sample.py
+
+import boto3
+from botocore.exceptions import ClientError
+
+SENDER = "AWS5  <rlaghdrud94@naver.com>"
+RECIPIENT = "rlaghdrud94@naver.com"
+CONFIGURATION_SET = "zzaeha-test"
+AWS_REGION = "ap-northeast-2"
+SUBJECT = "AWS5-Project-Signup!"
+BODY_TEXT = ("Player Sign-up!"
+            )
+BODY_HTML = """<html>
+<head></head>
+<body>
+  <h1>AWS5-Project player Sign-up</h1>
+  <p>This email was sent with
+    <a href='https://aws.amazon.com/ses/'>AWS SES</a>
+    using the
+    <a href='https://aws.amazon.com/sdk-for-python/'>
+      AWS SDK for Python (Boto)</a>
+      from AWS5 Team.</p>
+</body>
+</html>
+            """
+CHARSET = "UTF-8"
+client = boto3.client('ses',region_name=AWS_REGION)
+try:
+    response = client.send_email(
+        Destination={
+            'ToAddresses': [
+                RECIPIENT,
+            ],
+        },
+        Message={
+            'Body': {
+                'Html': {
+                    'Charset': CHARSET,
+                    'Data': BODY_HTML,
+                },
+                'Text': {
+                    'Charset': CHARSET,
+                    'Data': BODY_TEXT,
+                },
+            },
+            'Subject': {
+                'Charset': CHARSET,
+                'Data': SUBJECT,
+            },
+        },
+        Source=SENDER,
+        ConfigurationSetName=CONFIGURATION_SET,
+    )
+except ClientError as e:
+    print(e.response['Error']['Message'])
+else:
+    print("Email sent! Message ID:"),
+    print(response['MessageId'])
+------------------------------------------------------------------------------------------------
+python 설치 
+boto3 설치 - pip3 install boto3
+python sdk파일 생성 - vi ama~.py
+sdk실행 - python3 amaz~.py
+
+참고 - https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html

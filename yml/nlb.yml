@@ -1,0 +1,25 @@
+---
+- name : Test
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Get all nlb instances
+      community.aws.elb_application_lb_info:
+        region: ap-northeast-2
+      register: info
+
+    - name: set variable nlb
+      set_fact:
+        nlb_dns: "{{ item.dns_name }}"
+      with_items: "{{ info.load_balancers }}"
+      when: item.tags.Role is defined and item.tags.Role == 'final_nlb'
+
+    - name: set variable alb
+      set_fact:
+        alb_dns: "{{ item.dns_name }}"
+      with_items: "{{ info.load_balancers }}"
+      when: item.tags.Role is defined and item.tags.Role == 'final_alb'
+
+    - name: print
+      debug:
+        msg: "{{ nlb_dns }}, {{ alb_dns }}"

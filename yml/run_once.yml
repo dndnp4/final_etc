@@ -1,0 +1,28 @@
+---
+- name: run once test
+  hosts: _web
+  tasks:
+#  - name: test
+#    stat:
+#      path: "~/test"
+#    register: test
+#  - name: print
+#    debug:
+#      msg: "{{ test }}"
+
+   - name: yum
+     yum:
+       name: tmux
+       state: present
+#  - name: cmd
+#    shell: "echo test >> ~/test"
+#    run_once: true
+#  - name: cat
+###    shell: "cat ~/test"
+#    run_once: true
+#    register: string
+#
+ #### - name: print
+ #   debug:
+ #     msg: "{{ string.stdout_lines }}"
+ #   run_once: true

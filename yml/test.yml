@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: check
+    stat:
+      path: ~/a/b/c.txt
+    register: val
+
+  - name: asd
+    file:
+      path: ~/a/b/c.txt
+      recurse: yes
+      state: directory
+    when: val.stat.exists == false

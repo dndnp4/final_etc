@@ -1,0 +1,3 @@
+plugin: aws_rds
+regions:
+  - ap-northeast-2

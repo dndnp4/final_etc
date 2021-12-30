@@ -1,0 +1,36 @@
+  <bottom>
+		<div class="section">
+			<input type="radio" name="slide" id="slide01" checked>
+			<input type="radio" name="slide" id="slide02">
+			<input type="radio" name="slide" id="slide03">
+
+			<div class="slidewrap">
+				<ul class="slidelist">
+					<li>
+						<a href="https://www.bespinglobal.com/" target="_blank">
+							<label for="slide03" class="left"></label>
+							<img src="./img/bespin.jpg">
+							<label for="slide02" class="right"></label>
+						</a>
+					</li> 
+					<li>
+						<a href="https://www.busanit.or.kr/" target="_blank">
+							<label for="slide01" class="left"></label>
+							<img src="./img/busanit.jpg">
+							<label for="slide03" class="right"></label>
+						</a>
+					</li>
+					<li>
+						<a href="https://kfq.or.kr/" target="_blank">
+							<label for="slide02" class="left"></label>
+							<img src="./img/kfq.jpg">
+							<label for="slide01" class="right"></label>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="btn">
+			<button id="btn_stop_game" type="button" onclick="location.href='index.html' "> 그만두기 </button>
+		</div>
+  </bottom>

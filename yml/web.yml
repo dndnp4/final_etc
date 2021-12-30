@@ -1,0 +1,77 @@
+---
+- name: web
+  hosts: _final_web
+  gather_facts: no
+  vars:
+    dns: 'localhost'
+
+  tasks:
+  - name: get nlb dns
+    community.aws.elb_application_lb_info:
+      region: ap-northeast-2
+    delegate_to: localhost
+    register: info
+
+  - name: set variable nlb
+    set_fact:
+      nlb_dns: "{{ item.dns_name }}"
+    with_items: "{{ info.load_balancers }}"
+    delegate_to: localhost
+    when: item.tags.Role is defined and item.tags.Role == 'final_nlb'
+
+  - name: install package
+    yum:
+      name: "{{ item }}"
+      state: present
+    with_items:
+    - "httpd"
+    - "git"
+
+  - name: check main conf
+    stat:
+      path: "/etc/httpd/conf/httpd.conf"
+    register: main
+
+  - name: check custom conf
+    stat:
+      path: "/etc/httpd/conf/httpd.conf"
+    register: custom
+
+  - name: create custom configuration
+    file:
+      path: "/etc/httpd/conf.d/final.conf"
+      state: touch
+    when: main.stat.exists == true and custom.stat.exists == false
+  
+  - name: write proxy configuration
+    copy:
+      dest: "/etc/httpd/conf.d/final.conf"
+      content: |
+        <Directorymatch "^/.*/\.git/">
+          Order 'deny,allow'
+          Deny from all
+        </Directorymatch>
+        <VirtualHost *:80>
+          ProxyPassMatch /(signup|signin|game|result|uploader|gallery|origin)$ http://{{nlb_dns}}:8080/$1
+          ProxyPassReverse / http://{{nlb_dns}}:8080/
+        </VirtualHost>
+    when: custom.stat.exists == true
+  
+  - name: check html
+    stat:
+      path: "/var/www/html/index.html"
+    register: html
+  
+  - name: clone html files
+    shell: |
+      git clone https://github.com/dndnp4/final_apache.git ~/temp
+      mv ~/temp/* /var/www/html
+      rm -rf ~/temp
+      touch /var/www/html/health.html
+    when: html.stat.exists == false
+
+  - name: start apache
+    systemd:
+      name: httpd
+      state: started
+      enabled: yes

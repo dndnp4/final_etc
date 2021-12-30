@@ -1,0 +1,119 @@
+---
+- name: was
+  hosts: _final_WAS
+  gather_facts: no
+
+
+  tasks:
+  - name: install package
+    yum:
+      name: '{{ item }}'
+      state: present
+    with_items:
+    - "git"
+    - "gcc-c++"
+    - "make"
+
+  - name: check project
+    stat:
+      path: ~/final_flask
+    register: flask
+
+  - name: clone project
+    shell: git clone https://github.com/dndnp4/final_flask.git ~/final_flask
+    when: flask.stat.exists == false
+  
+  - name: install python package
+    shell: pip3 install -r ~/final_flask/requirements.txt
+    when: flask.stat.exists == false
+
+  - name: check project
+    stat:
+      path: ~/final_flask/config.py
+    register: flask
+
+  - name: create configuration file
+    file:
+      path: ~/final_flask/config.py
+      state: touch
+    when: flask.stat.exists == false
+
+  - name: Get all s3
+    community.aws.aws_s3_bucket_info:
+      region: ap-northeast-2
+      bucket_facts:
+        bucket_tagging: yes
+    register: info
+    delegate_to: localhost
+
+  - name: set var bucket_origin
+    set_fact: 
+      bucket_origin: "{{ item.name }}"
+    with_items: "{{ info.buckets }}"
+    when: item.bucket_tagging.Role is defined and item.bucket_tagging.Role == 'final_origin'
+
+  - name: set var bucket_resized
+    set_fact: 
+      bucket_resized: "{{ item.name }}"
+    with_items: "{{ info.buckets }}"
+    when: item.bucket_tagging.Role is defined and item.bucket_tagging.Role == 'final_resized'
+  
+  - name: Get all RDS instances
+    community.aws.rds_instance_info:
+      region: ap-northeast-2
+    register: info
+    delegate_to: localhost
+    
+  - name: set var rds info
+    set_fact:
+      db: { 'host': '{{item.endpoint.address}}', 'port': '{{item.endpoint.port}}', 'username': '{{item.master_username}}', 'default_db': '{{item.db_name | default("test")}}' }
+    with_items: "{{info.instances}}"
+    when: item.tags.Role is defined and item.tags.Role == 'final_db'
+
+  - name: write configuration
+    copy:
+      dest: ~/final_flask/config.py
+      content: |
+        class FlaskConfig:
+          SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{{db.username}}:It12345!@{{db.host}}:{{db.port}}/{{db.default_db}}?charset=utf8" 
+          SQLALCHEMY_ECHO = False
+          SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+          SQLALCHEMY_TRACK_MODIFICATIONS = False
+          SECRET_KEY = 'final'
+          DEBUG = True
+
+        class AWSConfig:
+          ORIGIN_BUCKET_NAME = '{{ bucket_origin }}'
+          ORIGIN_BUCKET_DOMAIN = 'https://{{ bucket_origin }}.s3.ap-northeast-2.amazonaws.com'
+          TUMB_BUCKET_NAME = '{{ bucket_resized }}'
+          TUMB_BUCKET_DOMAIN = 'https://{{ bucket_resized }}.s3.ap-northeast-2.amazonaws.com'
+          SES_EMAIL = 'jieun9452@gmail.com'
+          SES_CONFIG_SET_NAME = 'send_email'
+
+        class CommonConfig:
+          SALT_LENGTH = 32
+          HASH_NAME = 'sha256'
+          DK_LEN = 10000
+    # when: flask.stat.exists == true
+    tags: t1
+
+  - name: check nodejs
+    stat:
+      path: /bin/node
+    register: nodejs
+
+  - name: install nodejs & pm2
+    shell: |
+      curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
+      yum install -y nodejs
+      npm install -g pm2
+    when: nodejs.stat.exists == false
+
+  - name: check pm2
+    stat:
+      path: /bin/pm2
+    register: pm2
+
+  - name: start app.py
+    shell: pm2 start ~/final_flask/app.py --interpreter=python3
+    when: pm2.stat.exists == true
